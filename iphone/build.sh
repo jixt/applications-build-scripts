@@ -63,7 +63,10 @@ CFBuildDate=$(date +%d-%m-%Y)
 $PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
 
 # Set the settings values
-$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$WORKSPACE/$SETTINGS_BUNDLE/Root.plist"
+if [ "$SETTINGS_BUNDLE" != "" ]
+then
+	$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$WORKSPACE/$SETTINGS_BUNDLE/Root.plist"
+fi
 
 # Build the application for the several levels (Debug, Release, ...) &
 # create an ipa out of them
