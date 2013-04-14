@@ -91,7 +91,7 @@ for SDK in $SDKS; do
 		OTA_NAME="$APP_FILENAME-$CONFIG-manifest.plist"
 		IPA_NAME="$APP_FILENAME-$CONFIG.ipa"
 		OTA_URL="$(eval echo \$`echo OTAUrl$CONFIG`)"
-		APP_FILE=`find $WORKSPACE/build/$CONFIG-iphoneos -name "*.app"`
+		APP_FILE=`find "$WORKSPACE/build/$CONFIG-iphoneos" -name "*.app"`
         $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$(eval echo \$`echo Codesign$CONFIG`)" --embed "$CERTIFICATE";
         # Zip & Copy the dSYM file & remove the zip
         cd "$WORKSPACE/build/$CONFIG-iphoneos/"
