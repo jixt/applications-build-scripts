@@ -36,8 +36,8 @@ else
 fi
 
 export OUTPUT="$WORKSPACE/output"
-rm -rf $OUTPUT
-mkdir -p $OUTPUT
+rm -rf "$OUTPUT"
+mkdir -p "$OUTPUT"
 PROVISIONING_PROFILE_PATH=~/Library/MobileDevice/Provisioning\ Profiles/
 KEYCHAIN=~/Library/Keychains/login.keychain
 XCODEBUILD="/usr/bin/xcodebuild"
