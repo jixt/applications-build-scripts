@@ -35,7 +35,7 @@ else
 . "$WORKSPACE/$BUILD_CONFIG_FILE"
 fi
 
-export OUTPUT=$WORKSPACE/output
+export OUTPUT="$WORKSPACE/output"
 rm -rf $OUTPUT
 mkdir -p $OUTPUT
 PROVISIONING_PROFILE_PATH=~/Library/MobileDevice/Provisioning\ Profiles/
@@ -101,18 +101,18 @@ for SDK in $SDKS; do
         rm "$WORKSPACE/build/$CONFIG-iphoneos/$APP_FILENAME.tar.gz"
         # Copy the icon files
 		if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
-			cp $WORKSPACE/$OTASmallIcon $OUTPUT/Icon-57.png
+			cp "$WORKSPACE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
 		fi
 		if [ -f "$WORKSPACE/$OTALargeIcon" ]; then
-			cp $WORKSPACE/$OTALargeIcon $OUTPUT/Icon-512.png
+			cp "$WORKSPACE/$OTALargeIcon" "$OUTPUT/Icon-512.png"
 		fi
         # Copy the release noteS
         if [ -f "$WORKSPACE/$RELEASENOTE" ]; then
-            cp $WORKSPACE/$RELEASENOTE $OUTPUT/$RELEASENOTE
+            cp "$WORKSPACE/$RELEASENOTE" "$OUTPUT/$RELEASENOTE"
         fi
 		# Create the manifest file
-		bundle_version=$(defaults read $WORKSPACE/$INFO_PLIST CFBundleShortVersionString)
-		bundle_id=$(defaults read $WORKSPACE/$INFO_PLIST CFBundleIdentifier)
+		bundle_version=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleShortVersionString)
+		bundle_id=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleIdentifier)
 		cat <<-EOF > $OUTPUT/$OTA_NAME
 		<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 		<plist version="1.0">
