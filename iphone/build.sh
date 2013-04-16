@@ -126,7 +126,7 @@ for SDK in $SDKS; do
 		                   <key>kind</key>
 		                   <string>software-package</string>
 		                   <key>url</key>
-		                   <string>$OTA_URL/$BUILD_NUMBER/$IPA_NAME</string>
+		                   <string>{{ipa}}</string>
 		               </dict>
 		EOF
 		if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
@@ -137,7 +137,7 @@ for SDK in $SDKS; do
 		                   <key>needs-shine</key>
 		                   <true/>
 		                   <key>url</key>
-		                   <string>$OTA_URL/$BUILD_NUMBER/Icon-57.png</string>
+		                   <string>{{icon57}}</string>
 		               </dict>
 		EOF
 		fi
@@ -149,7 +149,7 @@ for SDK in $SDKS; do
 		                   <key>needs-shine</key>
 		                   <true/>
 		                   <key>url</key>
-		                   <string>$OTA_URL/$BUILD_NUMBER/Icon-512.png</string>
+		                   <string>{{icon512}}</string>
 		               </dict>
 		EOF
 		fi
