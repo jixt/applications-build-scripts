@@ -56,11 +56,6 @@ PLIST_BUDDY="/usr/libexec/PlistBuddy"
 LCASE_CLIENT_NAME=`lowerCase "$CLIENT_NAME"`
 LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
 
-# Amazon AWS
-
-#S3_CMD="/usr/local/bin/s3cmd"
-#S3_UPLOAD_LOCATION="s3://burntide-clients/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build/iphone/$BUILD_NUMBER"
-
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
@@ -183,20 +178,12 @@ for SDK in $SDKS; do
 		</plist>
 		EOF
 		
-		# Upload files to Amazon S3
+		# Upload files to Koomoda
 		
 		LCASE_IPA_NAME=`lowerCase "$IPA_NAME"`
 		LCASE_OTA_NAME=`lowerCase "$OTA_NAME"`
-
-		#$S3_CMD put -m "application/octet-stream" "$OUTPUT/$IPA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_IPA_NAME"
-		#$S3_CMD put -m "text/xml" "$OUTPUT/$OTA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_OTA_NAME"
-		#if [ "$OTASmallIcon" != "" ]
-		#then
-		#	$S3_CMD put "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
-		#fi
-		
-		# Upload files to Koomoda
-		
+		mv "${OUTPUT}/${IPA_NAME}" "${OUTPUT}/${LCASE_IPA_NAME}"
+		mv "${OUTPUT}/${OTA_NAME}" "${OUTPUT}/${LCASE_OTA_NAME}"
 		curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_IPA_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F manifest=@"${OUTPUT}/${LCASE_OTA_NAME}" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
     done
 done
