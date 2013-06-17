@@ -197,7 +197,7 @@ for SDK in $SDKS; do
 		
 		# Upload files to Koomoda
 		
-		curl $KOOMODA_API_URL -F file=@'$OUTPUT/$IPA_NAME' -F icon=@Icon-57.png -F manifest=@'$OUTPUT/$OTA_NAME' -F user_token='$K_ACCOUNT_TOKEN' -F app_token='$K_ACCOUNT_TOKEN' -F app_version='$BUILD_NUMBER'
+		curl $KOOMODA_API_URL -F file=@$OUTPUT/$IPA_NAME -F icon=@Icon-57.png -F manifest=@$OUTPUT/$OTA_NAME -F user_token=$K_ACCOUNT_TOKEN -F app_token=$K_ACCOUNT_TOKEN -F app_version=$BUILD_NUMBER
     done
 done
 
