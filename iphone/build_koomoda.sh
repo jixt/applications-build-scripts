@@ -109,20 +109,20 @@ $PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$INFO_PLIST"
 # Now build the application
 if [ "$TARGET_NAME" != "" ] 
 then
-	$XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+	$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
 	if [ "$APP_NAME" != "" ] 
 	then
-		$XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+		$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
 	else
-      	$XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+      	$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
 	fi
 else
 	$XCODEBUILD -configuration $CONFIG -sdk $SDK clean;
 	if [ "$APP_NAME" != "" ] 
 	then
-    	$XCODEBUILD -configuration $CONFIG -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+    	$XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
 	else
-		$XCODEBUILD -configuration $CONFIG -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+		$XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
 	fi	 
 fi
 # Create the ipa file
