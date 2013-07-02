@@ -14,7 +14,7 @@ function failed()
 
 function usage()
 {
-    echo "Usage: $0 -t koomoda_account_token -a koomoda_app_token (-c configfile)"
+    echo "Usage: $0 -t koomoda_account_token -a koomoda_app_token (-c configfile -an app_name -bi bundle_id)"
     exit 2
 }
 
@@ -28,6 +28,8 @@ do
 		-t)	K_ACCOUNT_TOKEN=$2; shift;;
 		-a)	K_APP_TOKEN=$2; shift;;
         -c) BUILD_CONFIG_FILE=$2; shift;;
+		-an) APP_NAME=$2; shift;;
+		-bi) BUNDLE_ID=$2; shift;;
         *)	usage;;
     esac
     shift
@@ -86,26 +88,43 @@ fi
 
 for SDK in $SDKS; do
     for CONFIG in $CONFIGURATIONS; do
-        # Set the bundle identifier
-        $PLIST_BUDDY -c "Set :CFBundleIdentifier $(eval echo \$`echo BundleIdentifier$CONFIG`)" "$INFO_PLIST"
-        # Set variables
+		# Set variables
 		PROVISIONING=$(eval echo \$`echo Provision$CONFIG`)
+		CODE_SIGN_IDENTITY=$(eval echo \$`echo Codesign$CONFIG`)
         CERTIFICATE="$PROVISIONING_PROFILE_PATH/$PROVISIONING.mobileprovision"
+		if [ "$BUNDLE_ID" != "" ] 
+        then
+			BUNDLE_IDENTIFIER=$BUNDLE_ID
+		else
+			BUNDLE_IDENTIFIER=$(eval echo \$`echo BundleIdentifier$CONFIG`)
+		fi
+        # Set the bundle identifier
+        $PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$INFO_PLIST"
 		# Build
         if [ "$TARGET_NAME" != "" ] 
         then
             $XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
-            $XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK || failed build;
+			if [ "$APP_NAME" != "" ] 
+			then
+				$XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+			else
+            	$XCODEBUILD -configuration $CONFIG -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+			fi
         else
             $XCODEBUILD -configuration $CONFIG -sdk $SDK clean;
-            $XCODEBUILD -configuration $CONFIG -sdk $SDK || failed build;
+			if [ "$APP_NAME" != "" ] 
+			then
+            	$XCODEBUILD -configuration $CONFIG -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+			else
+				$XCODEBUILD -configuration $CONFIG -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
+			fi	 
         fi
 		# Create ipa
 		OTA_NAME="$APP_FILENAME-$CONFIG-manifest.plist"
 		IPA_NAME="$APP_FILENAME-$CONFIG.ipa"
 		OTA_URL="$(eval echo \$`echo OTAUrl$CONFIG`)"
 		APP_FILE=`find "$WORKSPACE/build/$CONFIG-iphoneos" -name "*.app"`
-        $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$(eval echo \$`echo Codesign$CONFIG`)" --embed "$CERTIFICATE";
+        $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$CODE_SIGN_IDENTITY" --embed "$CERTIFICATE";
         # Zip & Copy the dSYM file & remove the zip
         cd "$WORKSPACE/build/$CONFIG-iphoneos/"
         tar -pczf "$APP_FILENAME.tar.gz" "$APP_FILENAME.app.dSYM"
