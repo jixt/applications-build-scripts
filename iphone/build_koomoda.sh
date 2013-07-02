@@ -91,18 +91,18 @@ fi
 SDK="iphoneos"
 
 # Set Provisioning profile
-PROVISIONING=$(eval echo \$`echo Provision$CONFIG`)
+PROVISIONING=$(eval echo \$`echo Provision$XCODE_CONFIG`)
 # Set Code Sign Identity (if not already set with parameter)
 if [ "$CODE_SIGN_IDENTITY" == "" ] 
 then
-	CODE_SIGN_IDENTITY=$(eval echo \$`echo Codesign$CONFIG`)
+	CODE_SIGN_IDENTITY=$(eval echo \$`echo Codesign$XCODE_CONFIG`)
 fi	
 # Set the certificate
 CERTIFICATE="$PROVISIONING_PROFILE_PATH/$PROVISIONING.mobileprovision"
 # Set the bundle identifier (if not already set with parameter)
 if [ "$BUNDLE_IDENTIFIER" == "" ] 
 then
-	BUNDLE_IDENTIFIER=$(eval echo \$`echo BundleIdentifier$CONFIG`)
+	BUNDLE_IDENTIFIER=$(eval echo \$`echo BundleIdentifier$XCODE_CONFIG`)
 fi
 # Set the bundle identifier in the info.plist
 $PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$INFO_PLIST"
@@ -117,7 +117,7 @@ then
       	$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
 	fi
 else
-	$XCODEBUILD -configuration $CONFIG -sdk $SDK clean;
+	$XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK clean;
 	if [ "$APP_NAME" != "" ] 
 	then
     	$XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" || failed build;
@@ -126,17 +126,17 @@ else
 	fi	 
 fi
 # Create the ipa file
-OTA_NAME="$APP_FILENAME-$CONFIG-manifest.plist"
-IPA_NAME="$APP_FILENAME-$CONFIG.ipa"
-OTA_URL="$(eval echo \$`echo OTAUrl$CONFIG`)"
-APP_FILE=`find "$WORKSPACE/build/$CONFIG-iphoneos" -name "*.app"`
+OTA_NAME="$APP_FILENAME-$XCODE_CONFIG-manifest.plist"
+IPA_NAME="$APP_FILENAME-$XCODE_CONFIG.ipa"
+OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
+APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
 $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$CODE_SIGN_IDENTITY" --embed "$CERTIFICATE";
 # Zip & Copy the dSYM file & remove the zip
-cd "$WORKSPACE/build/$CONFIG-iphoneos/"
+cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
 tar -pczf "$APP_FILENAME.tar.gz" "$APP_FILENAME.app.dSYM"
 cd "$WORKSPACE"
-cp "$WORKSPACE/build/$CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
-rm "$WORKSPACE/build/$CONFIG-iphoneos/$APP_FILENAME.tar.gz"
+cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
+rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 # Copy the icon files
 	if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
 		cp "$WORKSPACE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
