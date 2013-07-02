@@ -14,7 +14,7 @@ function failed()
 
 function usage()
 {
-    echo "Usage: $0 (-c configfile)"
+    echo "Usage: $0 (-c configfile) (-s3c s3configfile)"
     exit 2
 }
 
@@ -26,6 +26,7 @@ while [ $# -gt 0 ]
 do
     case "$1" in
         -c) BUILD_CONFIG_FILE=$2; shift;;
+		-s3c) S3_CMD_CONFIG_FILE=$2; shift;;
         *)	usage;;
     esac
     shift
@@ -183,12 +184,24 @@ for SDK in $SDKS; do
 		
 		LCASE_IPA_NAME=`lowerCase "$IPA_NAME"`
 		LCASE_OTA_NAME=`lowerCase "$OTA_NAME"`
-
-		$S3_CMD put -m "application/octet-stream" "$OUTPUT/$IPA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_IPA_NAME"
-		$S3_CMD put -m "text/xml" "$OUTPUT/$OTA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_OTA_NAME"
-		if [ "$OTASmallIcon" != "" ]
-		then
-			$S3_CMD put "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
+		
+		mv "${OUTPUT}/${IPA_NAME}" "${OUTPUT}/${LCASE_IPA_NAME}"
+		mv "${OUTPUT}/${OTA_NAME}" "${OUTPUT}/${LCASE_OTA_NAME}"
+		
+		if [ "$S3_CMD_CONFIG_FILE" == "" ]; then
+			$S3_CMD put -m "application/octet-stream" "$OUTPUT/$LCASE_IPA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_IPA_NAME"
+			$S3_CMD put -m "text/xml" "$OUTPUT/$LCASE_OTA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_OTA_NAME"
+			if [ "$OTASmallIcon" != "" ]
+			then
+				$S3_CMD put "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
+			fi
+		else
+			$S3_CMD put -c "~/.$S3_CMD_CONFIG_FILE" -m "application/octet-stream" "$OUTPUT/$LCASE_IPA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_IPA_NAME"
+			$S3_CMD put -c "~/.$S3_CMD_CONFIG_FILE" -m "text/xml" "$OUTPUT/$LCASE_OTA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_OTA_NAME"
+			if [ "$OTASmallIcon" != "" ]
+			then
+				$S3_CMD put -c "~/.$S3_CMD_CONFIG_FILE"  "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
+			fi
 		fi
 		
     done
