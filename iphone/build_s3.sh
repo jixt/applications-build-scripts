@@ -14,7 +14,7 @@ function failed()
 
 function usage()
 {
-    echo "Usage: $0 (-c configfile) (-s3c s3configfile)"
+    echo "Usage: $0 -s3b s3bucket (-c configfile -s3c s3configfile)"
     exit 2
 }
 
@@ -27,10 +27,16 @@ do
     case "$1" in
         -c) BUILD_CONFIG_FILE=$2; shift;;
 		-s3c) S3_CMD_CONFIG_FILE=$2; shift;;
+		-s3b) S3_BUCKET=$2; shift;;
         *)	usage;;
     esac
     shift
 done
+
+if [ "$S3_BUCKET" == ""]
+then
+	usage;
+fi
 
 set -ex
 
@@ -60,7 +66,7 @@ LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
 # Amazon AWS
 
 S3_CMD="/usr/local/bin/s3cmd"
-S3_UPLOAD_LOCATION="s3://burntide-clients/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build/iphone/$BUILD_NUMBER"
+S3_UPLOAD_LOCATION="s3://$S3_BUCKET/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build/iphone/$BUILD_NUMBER"
 
 # Set the short version number
 CFBundleShortVersionString=$BUILD_NUMBER
@@ -200,7 +206,7 @@ for SDK in $SDKS; do
 			$S3_CMD put -c "~/.$S3_CMD_CONFIG_FILE" -m "text/xml" "$OUTPUT/$LCASE_OTA_NAME" "$S3_UPLOAD_LOCATION/$LCASE_OTA_NAME"
 			if [ "$OTASmallIcon" != "" ]
 			then
-				$S3_CMD put -c "~/.$S3_CMD_CONFIG_FILE"  "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
+				$S3_CMD put -c ~/.$S3_CMD_CONFIG_FILE  "$WORKSPACE/$OTASmallIcon" "$S3_UPLOAD_LOCATION/Icon-57.png"
 			fi
 		fi
 		
