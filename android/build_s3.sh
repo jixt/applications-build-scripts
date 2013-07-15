@@ -12,7 +12,7 @@ function failed() {
     exit 2
 }
 function usage() {
-	echo "Usage: $0 -xc android_config -s3b s3bucket -ksa keystore_alias -ksp keystore_password (-s3c s3configfile)"
+	echo "Usage: $0 -ac android_config -s3b s3bucket -ksa keystore_alias -ksp keystore_password (-s3c s3configfile)"
 	exit 2
 }
 function lowerCase() {
