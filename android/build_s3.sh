@@ -12,7 +12,7 @@ function failed() {
     exit 2
 }
 function usage() {
-	echo "Usage: $0 -ac android_config -s3b s3bucket -ksa keystore_alias -ksp keystore_password (-s3c s3configfile)"
+	echo "Usage: $0 -ac android_config -asdk android_sdk_path -akey android_keystore_path -s3b s3bucket -ksa keystore_alias -ksp keystore_password (-s3c s3configfile)"
 	exit 2
 }
 function lowerCase() {
@@ -124,6 +124,8 @@ do
 		-ksa) KEYSTORE_ALIAS=$2; shift;;
 		-ksp) KEYSTORE_PASSWORD=$2; shift;;
 		-ac) ANDROID_CONFIG=$2; shift;;
+		-asdk) PATH_ANDROID_SDK=$2; shift;;
+		-akey) PATH_KEYSTORE=$2; shift;;
 		*)	usage;;
     esac
 	shift
@@ -149,8 +151,6 @@ export OUTPUT="$WORKSPACE/output"
 rm -rf "$OUTPUT"
 mkdir -p "$OUTPUT"
 PATH_ANT="/usr/bin/ant"
-PATH_ANDROID_SDK="/Library/Android/Home"
-PATH_KEYSTORE="/Library/Android/keystore/production.keystore"
 BUILD_DATE=$(date +%d-%m-%Y) #the current builddate
 
 # Create lowercase variables for client and project
