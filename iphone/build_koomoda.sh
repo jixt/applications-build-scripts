@@ -109,7 +109,12 @@ $PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$INFO_PLIST"
 # Now build the application
 if [ "$TARGET_NAME" != "" ] 
 then
-	$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+	if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
+	then
+		$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+	else
+		$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+	fi
 	if [ "$APP_NAME" != "" ] 
 	then
 		if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
