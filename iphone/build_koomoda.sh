@@ -111,9 +111,9 @@ if [ "$TARGET_NAME" != "" ]
 then
 	if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
 	then
-		$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+		$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
 	else
-		$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
+		$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
 	fi
 	if [ "$APP_NAME" != "" ] 
 	then
