@@ -158,7 +158,7 @@ APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
 $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$CODE_SIGN_IDENTITY" --embed "$CERTIFICATE";
 # Zip & Copy the dSYM file & remove the zip
 cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
-tar -pczf "$APP_FILENAME.tar.gz" "$APP_FILENAME.app.dSYM"
+tar -pczf "$APP_FILENAME.tar.gz" "$TARGET_NAME.app.dSYM"
 cd "$WORKSPACE"
 cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
 rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
