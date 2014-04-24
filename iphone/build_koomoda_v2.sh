@@ -80,7 +80,6 @@ else
 	source ./build_workspace_core.sh
 fi	
 
-
 # Upload files to Koomoda
 
 LCASE_IPA_NAME=`lowerCase "$IPA_NAME"`
