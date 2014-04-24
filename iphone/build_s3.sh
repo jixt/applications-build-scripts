@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 BurnTide
+# Copyright (C) 2014 BurnTide
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -12,7 +12,7 @@ function failed() {
 }
 
 function usage() {
-    echo "Usage: $0 -xc xcode_config -s3b s3bucket (-c configfile -s3c s3configfile)"
+    echo "Usage: $0 -xc xcode_config -s3b s3bucket (-c configfile -s3c s3configfile -an app_name -bi bundle_id -ci code_sign_identity)"
     exit 2
 }
 
@@ -23,9 +23,12 @@ function lowerCase() {
 while [ $# -gt 0 ]
 do
     case "$1" in
-        -c) BUILD_CONFIG_FILE=$2; shift;;
-		-s3c) S3_CMD_CONFIG_FILE=$2; shift;;
+    	-s3c) S3_CMD_CONFIG_FILE=$2; shift;;
 		-s3b) S3_BUCKET=$2; shift;;
+        -c) BUILD_CONFIG_FILE=$2; shift;;
+        -an) APP_NAME=$2; shift;;
+		-bi) BUNDLE_IDENTIFIER=$2; shift;;
+		-ci) CODE_SIGN_IDENTITY=$2; shift;;
 		-xc) XCODE_CONFIG=$2; shift;;
         *)	usage;;
     esac
@@ -67,128 +70,21 @@ LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
 S3_CMD="/usr/local/bin/s3cmd"
 S3_UPLOAD_LOCATION="s3://$S3_BUCKET/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build/iphone/$BUILD_NUMBER"
 
-# Set the short version number
-CFBundleShortVersionString=$BUILD_NUMBER
-$PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$INFO_PLIST"
+#
+#
+# Common part
+#
+#
 
-# Set the date
-CFBuildDate=$(date +%d-%m-%Y)
-$PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
+source ./build.core.sh
 
-# Set the settings values
-if [ "$SETTINGS_BUNDLE" != "" ]
-then
-	$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$WORKSPACE/$SETTINGS_BUNDLE/Root.plist"
-fi
-
-# Build the application for the several levels (Debug, Release, ...) &
-# create an ipa out of them
-
-SDK="iphoneos"
-
-# Set the bundle identifier
-$PLIST_BUDDY -c "Set :CFBundleIdentifier $(eval echo \$`echo BundleIdentifier$XCODE_CONFIG`)" "$INFO_PLIST"
-# Set variables
-PROVISIONING=$(eval echo \$`echo Provision$XCODE_CONFIG`)
-CERTIFICATE="$PROVISIONING_PROFILE_PATH/$PROVISIONING.mobileprovision"
-# Build
-if [ "$TARGET_NAME" != "" ] 
-then
-	$XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK clean;
-    $XCODEBUILD -configuration $XCODE_CONFIG -target "$TARGET_NAME" -sdk $SDK || failed build;
-else
-    $XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK clean;
-    $XCODEBUILD -configuration $XCODE_CONFIG -sdk $SDK || failed build;
-fi
-# Create ipa
-OTA_NAME="$APP_FILENAME-$XCODE_CONFIG-manifest.plist"
-IPA_NAME="$APP_FILENAME-$XCODE_CONFIG.ipa"
-OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
-APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
-$XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$(eval echo \$`echo Codesign$XCODE_CONFIG`)" --embed "$CERTIFICATE";
-# Zip & Copy the dSYM file & remove the zip
-cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
-tar -pczf "$APP_FILENAME.tar.gz" "$APP_FILENAME.app.dSYM"
-cd "$WORKSPACE"
-cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
-rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
-# Copy the icon files
-if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
-	cp "$WORKSPACE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
-fi
-if [ -f "$WORKSPACE/$OTALargeIcon" ]; then
-	cp "$WORKSPACE/$OTALargeIcon" "$OUTPUT/Icon-512.png"
-fi
-# Copy the release noteS
-if [ -f "$WORKSPACE/$RELEASENOTE" ]; then
-	cp "$WORKSPACE/$RELEASENOTE" "$OUTPUT/$RELEASENOTE"
-fi
-# Create the manifest file
-bundle_version=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleShortVersionString)
-bundle_id=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleIdentifier)
-cat <<-EOF > $OUTPUT/$OTA_NAME
-		<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-		<plist version="1.0">
-		<dict>
-		   <key>items</key>
-		   <array>
-		       <dict>
-		           <key>assets</key>
-		           <array>
-		               <dict>
-		                   <key>kind</key>
-		                   <string>software-package</string>
-		                   <key>url</key>
-		                   <string>{{ipa}}</string>
-		               </dict>
-		EOF
-if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
-			cat <<-EOF >> $OUTPUT/$OTA_NAME
-		               <dict>
-		                   <key>kind</key>
-		                   <string>display-image</string>
-		                   <key>needs-shine</key>
-		                   <true/>
-		                   <key>url</key>
-		                   <string>{{icon57}}</string>
-		               </dict>
-		EOF
-fi
-if [ -f "$WORKSPACE/$OTALargeIcon" ]; then
-			cat <<-EOF >> $OUTPUT/$OTA_NAME
-		               <dict>
-		                   <key>kind</key>
-		                   <string>full-size-image</string>
-		                   <key>needs-shine</key>
-		                   <true/>
-		                   <key>url</key>
-		                   <string>{{icon512}}</string>
-		               </dict>
-		EOF
-fi
-		cat <<-EOF >> $OUTPUT/$OTA_NAME
-		           </array>
-		           <key>metadata</key>
-		           <dict>
-		               <key>bundle-identifier</key>
-		               <string>$bundle_id</string>
-		               <key>bundle-version</key>
-		               <string>$bundle_version</string>
-		               <key>kind</key>
-		               <string>software</string>
-		               <key>title</key>
-		               <string>$APP_FILENAME</string>
-		           </dict>
-		       </dict>
-		   </array>
-		</dict>
-		</plist>
-		EOF
+#
+#
+#
+#
+#
 		
 # Upload files to Amazon S3
-		
-LCASE_IPA_NAME=`lowerCase "$IPA_NAME"`
-LCASE_OTA_NAME=`lowerCase "$OTA_NAME"`
 		
 mv "${OUTPUT}/${IPA_NAME}" "${OUTPUT}/${LCASE_IPA_NAME}"
 mv "${OUTPUT}/${OTA_NAME}" "${OUTPUT}/${LCASE_OTA_NAME}"
