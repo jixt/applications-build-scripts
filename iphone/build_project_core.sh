@@ -44,24 +44,24 @@ $PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$INFO_PLIST"
 # Now build the application
 if [ "$TARGET_NAME" != "" ] 
 then
-	if [ "$PROJECT_NAME" != "" ] 
+	if [ "$XCODE_PROJECT_NAME" != "" ] 
 	then
-		$XCODEBUILD -project "$PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
+		$XCODEBUILD -project "$XCODE_PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
 	else
 		$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
 	fi
 	if [ "$APP_NAME" != "" ] 
 	then
-		if [ "$PROJECT_NAME" != "" ] 
+		if [ "$XCODE_PROJECT_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
 			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	else
-		if [ "$PROJECT_NAME" != "" ] 
+		if [ "$XCODE_PROJECT_NAME" != "" ] 
 		then
-      		$XCODEBUILD -project "$PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+      		$XCODEBUILD -project "$XCODE_PROJECT_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
 			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
@@ -70,33 +70,33 @@ else
 	$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK clean;
 	if [ "$APP_NAME" != "" ] 
 	then
-    	if [ "$PROJECT_NAME" != "" ] 
+    	if [ "$XCODE_PROJECT_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$PROJECT_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
 			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	else
-		if [ "$PROJECT_NAME" != "" ] 
+		if [ "$XCODE_PROJECT_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$PROJECT_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
 			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	fi	 
 fi
 # Create the ipa file
-OTA_NAME="$APP_FILENAME-$XCODE_CONFIG-manifest.plist"
-IPA_NAME="$APP_FILENAME-$XCODE_CONFIG.ipa"
+OTA_NAME="$PROJECT_NAME-$XCODE_CONFIG-manifest.plist"
+IPA_NAME="$PROJECT_NAME-$XCODE_CONFIG.ipa"
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
 $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$CODE_SIGN_IDENTITY" --embed "$CERTIFICATE";
 # Zip & Copy the dSYM file & remove the zip
 cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
-tar -pczf "$APP_FILENAME.tar.gz" "$TARGET_NAME.app.dSYM"
+tar -pczf "$PROJECT_NAME.tar.gz" "$TARGET_NAME.app.dSYM"
 cd "$WORKSPACE"
-cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
-rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
+cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$PROJECT_NAME.tar.gz" "$OUTPUT/$PROJECT_NAME.tar.gz"
+rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$PROJECT_NAME.tar.gz"
 # Copy the icon files
 	if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
 		cp "$WORKSPACE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
@@ -162,7 +162,7 @@ rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	               <key>kind</key>
 	               <string>software</string>
 	               <key>title</key>
-	               <string>$APP_FILENAME</string>
+	               <string>$PROJECT_NAME</string>
 	           </dict>
 	       </dict>
 	   </array>

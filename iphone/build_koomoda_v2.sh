@@ -62,11 +62,6 @@ XCODEBUILD="/usr/bin/xcodebuild"
 XCRUN="/usr/bin/xcrun"
 PLIST_BUDDY="/usr/libexec/PlistBuddy"
 
-# Create lowercase variables for client and project
-
-LCASE_CLIENT_NAME=`lowerCase "$CLIENT_NAME"`
-LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
-
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
