@@ -73,7 +73,13 @@ KOOMODA_API_URL="https://www.koomoda.com/app/upload"
 
 # Add the build script core
 
-source ./build_project_core.sh
+if [ "$WORKSPACE_NAME" == ""]
+then
+	source ./build_project_core.sh
+else
+	source ./build_workspace_core.sh
+fi	
+
 
 # Upload files to Koomoda
 
