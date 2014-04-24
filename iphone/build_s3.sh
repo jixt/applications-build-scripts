@@ -70,19 +70,9 @@ LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
 S3_CMD="/usr/local/bin/s3cmd"
 S3_UPLOAD_LOCATION="s3://$S3_BUCKET/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build/iphone/$BUILD_NUMBER"
 
-#
-#
-# Common part
-#
-#
+# Add the build script core
 
-source ./build.core.sh
-
-#
-#
-#
-#
-#
+source ./build_project_core.sh
 		
 # Upload files to Amazon S3
 		
