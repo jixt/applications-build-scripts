@@ -72,7 +72,12 @@ S3_UPLOAD_LOCATION="s3://$S3_BUCKET/$LCASE_CLIENT_NAME/$LCASE_PROJECT_NAME/build
 
 # Add the build script core
 
-source ./build_project_core.sh
+if [ "$WORKSPACE_NAME" == ""]
+then
+	source ./build_project_core.sh
+else
+	source ./build_workspace_core.sh
+fi
 		
 # Upload files to Amazon S3
 		
