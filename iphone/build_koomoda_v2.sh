@@ -68,10 +68,11 @@ KOOMODA_API_URL="https://www.koomoda.com/app/upload"
 
 # Add the build script core
 
-if [ "$WORKSPACE_NAME" == ""]
-then
+if [ "$WORKSPACE_NAME" == ""]; then
+	echo "Project build!"
 	source ./build_project_core.sh
 else
+	echo "Workspace build!"
 	source ./build_workspace_core.sh
 fi	
 
