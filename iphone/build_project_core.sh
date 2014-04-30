@@ -108,7 +108,7 @@ OTA_NAME="$PROJECT_NAME-$XCODE_CONFIG-manifest.plist"
 IPA_NAME="$PROJECT_NAME-$XCODE_CONFIG.ipa"
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
-DSYM_FILE =`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app.dSYM"`
+DSYM_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app.dSYM"`
 $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign "$CODE_SIGN_IDENTITY" --embed "$CERTIFICATE";
 
 # Zip & Copy the dSYM file & remove the zip
