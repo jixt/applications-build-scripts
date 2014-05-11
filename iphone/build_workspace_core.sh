@@ -16,9 +16,9 @@ echo "Build the application"
 $XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK clean | xcpretty -c;
 if [ "$APP_NAME" != "" ] 
 then
-	$XCODEBUILD -workspace "$WORKSPACE_NAME".xcworkspace -scheme "$SCHEME_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build | xcpretty -c && exit ${PIPESTATUS[0]};
+	$XCODEBUILD -workspace "$WORKSPACE_NAME".xcworkspace -scheme "$SCHEME_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME=$APP_NAME BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" | xcpretty -c && exit ${PIPESTATUS[0]} || failed build;
 else
-	$XCODEBUILD -workspace "$WORKSPACE_NAME".xcworkspace -scheme "$SCHEME_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build | xcpretty -c && exit ${PIPESTATUS[0]};
+	$XCODEBUILD -workspace "$WORKSPACE_NAME".xcworkspace -scheme "$SCHEME_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" | xcpretty -c && exit ${PIPESTATUS[0]} || failed build;
 fi
 
 #Create IPA
