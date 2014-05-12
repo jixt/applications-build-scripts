@@ -16,9 +16,9 @@ if [ "$TARGET_NAME" != "" ]
 then
 	if [ "$XCODE_PROJECT_NAME" != "" ] 
 	then
-		$XCODEBUILD -project "$XCODE_PROJECT_NAME".xcodeproj -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
+		$XCODEBUILD -project "$XCODE_PROJECT_NAME".xcodeproj -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean | xcpretty -c;
 	else
-		$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean;
+		$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK clean | xcpretty -c;
 	fi
 	if [ "$APP_NAME" != "" ] 
 	then
