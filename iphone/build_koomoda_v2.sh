@@ -37,7 +37,7 @@ do
     shift
 done
 
-if [ "$K_ACCOUNT_TOKEN" == "" -o "$K_APP_TOKEN" == "" -o "$XCODE_CONFIG" == ""]
+if [ "$K_ACCOUNT_TOKEN" == "" -o "$K_APP_TOKEN" == "" -o "$XCODE_CONFIG" == "" ]
 then
 	usage;
 fi

@@ -9,8 +9,14 @@
 # Create the ipa file
 echo "Create the IPA file"
 
-OTA_NAME="$PROJECT_NAME-$XCODE_CONFIG-manifest.plist"
-IPA_NAME="$PROJECT_NAME-$XCODE_CONFIG.ipa"
+if [ "$APP_NAME" != "" ] 
+then
+	OTA_NAME="$APP_NAME-$XCODE_CONFIG-manifest.plist"
+	IPA_NAME="$APP_NAME-$XCODE_CONFIG.ipa"
+else
+	OTA_NAME="$PROJECT_NAME-$XCODE_CONFIG-manifest.plist"
+	IPA_NAME="$PROJECT_NAME-$XCODE_CONFIG.ipa"
+fi
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
 DSYM_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app.dSYM"`
