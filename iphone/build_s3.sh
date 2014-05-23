@@ -72,8 +72,7 @@ S3_UPLOAD_LOCATION="s3://$S3_BUCKET/$LCASE_CLIENT_NAME/$PROJECT_NAME/build/iphon
 
 # Add the build script core
 
-if [ "$WORKSPACE_NAME" == ""]
-then
+if [ "$WORKSPACE_NAME" == "" ]; then
 	source ./build_project_core.sh
 else
 	source ./build_workspace_core.sh
