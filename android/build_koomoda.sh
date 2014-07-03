@@ -49,6 +49,6 @@ FILE_NAME="$APP_NAME-$BUILD_TYPE.apk"
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
-curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${FILE_NAME}" -F icon=@"${OUTPUT}/logo.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
+curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${FILE_NAME}" -F icon=@"${OUTPUT}/logo.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}" -F platform="android"
 
 
