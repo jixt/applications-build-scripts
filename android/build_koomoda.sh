@@ -45,10 +45,13 @@ export OUTPUT="$WORKSPACE/output"
 # Create lowercase variables for client and project
 
 FILE_NAME="$APP_NAME-$BUILD_TYPE.apk"
+LCASE_FILE_NAME=`lowerCase "$FILE_NAME"`
+mv "${OUTPUT}/${FILE_NAME}" "${OUTPUT}/${LCASE_FILE_NAME}"
+mv "${OUTPUT}/logo.png" "${OUTPUT}/Icon-57.png"
 
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
-curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${FILE_NAME}" -F icon=@"${OUTPUT}/logo.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}" -F platform="android"
+curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}" -F platform="android"
 
 
