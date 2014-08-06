@@ -12,7 +12,7 @@ function failed() {
     exit 2
 }
 function usage() {
-	echo "Usage: $0  -bt build_type -an app_name -t koomoda_account_token -a koomoda_app_token (optional: -abn build_number"
+	echo "Usage: $0  -bt build_type -an app_name -t koomoda_account_token -a koomoda_app_token (optional: -abn build_number)"
 	exit 2
 }
 function lowerCase() {
@@ -49,7 +49,7 @@ APPLICATION_VERSION_NUMBER=$BUILD_NUMBER
 
 if [ "$APPLICATION_BUILD_NUMBER" != ""]
 then
-	APPLICATION_VERSION_NUMBER=$APPLICATION_BUILD_NUMBER
+	$APPLICATION_VERSION_NUMBER=$APPLICATION_BUILD_NUMBER
 fi
 
 # Create lowercase variables for client and project
