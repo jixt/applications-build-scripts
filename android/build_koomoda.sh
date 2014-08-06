@@ -12,7 +12,7 @@ function failed() {
     exit 2
 }
 function usage() {
-	echo "Usage: $0  -bt build_type -an app_name -t koomoda_account_token -a koomoda_app_token"
+	echo "Usage: $0  -bt build_type -an app_name -t koomoda_account_token -a koomoda_app_token (optional: -abn build_number"
 	exit 2
 }
 function lowerCase() {
@@ -28,6 +28,7 @@ do
 		-a)	K_APP_TOKEN=$2; shift;;
 		-bt)BUILD_TYPE=$2; shift;;
 		-an)APP_NAME=$2; shift;;
+		-abn)APPLICATION_BUILD_NUMBER=$2; shift;;
 		*)	usage;;
     esac
 	shift
@@ -42,6 +43,15 @@ set -ex
 
 export OUTPUT="$WORKSPACE/output"
 
+# Set the application version number
+
+APPLICATION_VERSION_NUMBER=$BUILD_NUMBER
+
+if [ "$APPLICATION_BUILD_NUMBER" != ""]
+then
+	APPLICATION_VERSION_NUMBER=$APPLICATION_BUILD_NUMBER
+fi
+
 # Create lowercase variables for client and project
 
 FILE_NAME="$APP_NAME-$BUILD_TYPE.apk"
@@ -52,6 +62,6 @@ mv "${OUTPUT}/logo.png" "${OUTPUT}/Icon-57.png"
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
-curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}" -F platform="android"
+curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${APPLICATION_VERSION_NUMBER}" -F platform="android"
 
 
