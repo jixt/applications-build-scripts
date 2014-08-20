@@ -54,8 +54,13 @@ fi
 
 # Create lowercase variables for client and project
 
+# Upload files to Koomoda
+REPLACE_AMPESAND_STRING=""
+
 FILE_NAME="$APP_NAME-$BUILD_TYPE.apk"
 LCASE_FILE_NAME=`lowerCase "$FILE_NAME"`
+LCASE_FILE_NAME=${LCASE_FILE_NAME//[&\']/$REPLACE_AMPESAND_STRING}
+
 mv "${OUTPUT}/${FILE_NAME}" "${OUTPUT}/${LCASE_FILE_NAME}"
 mv "${OUTPUT}/logo.png" "${OUTPUT}/Icon-57.png"
 
