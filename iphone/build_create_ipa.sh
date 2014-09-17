@@ -13,9 +13,11 @@ if [ "$APP_NAME" != "" ]
 then
 	OTA_NAME="$APP_NAME-$XCODE_CONFIG-manifest.plist"
 	IPA_NAME="$APP_NAME-$XCODE_CONFIG.ipa"
+	DSYM_NAME="$APP_NAME-$XCODE_CONFIG.tar.gz"
 else
 	OTA_NAME="$PROJECT_NAME-$XCODE_CONFIG-manifest.plist"
 	IPA_NAME="$PROJECT_NAME-$XCODE_CONFIG.ipa"
+	DSYM_NAME="$PROJECT_NAME-$XCODE_CONFIG.tar.gz"
 fi
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
@@ -26,10 +28,10 @@ $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --sign
 echo "Zip and Copy the dSYM file"
 
 cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
-tar -pczf "$PROJECT_NAME.tar.gz" "$DSYM_FILE"
+tar -pczf "$DSYM_NAME" "$DSYM_FILE"
 cd "$WORKSPACE"
-cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$PROJECT_NAME.tar.gz" "$OUTPUT/$PROJECT_NAME.tar.gz"
-rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$PROJECT_NAME.tar.gz"
+cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$DSYM_NAME" "$OUTPUT/$DSYM_NAME"
+rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$DSYM_NAME"
 
 # Copy the icon files
 echo "Copy the icon files"
@@ -107,4 +109,5 @@ echo "Copy the icon files"
 	EOF
 	
 LCASE_IPA_NAME=`lowerCase "$IPA_NAME"`
+LCASE_DSYM_NAME=`lowerCase "$DSYM_NAME"`
 LCASE_OTA_NAME=`lowerCase "$OTA_NAME"`
