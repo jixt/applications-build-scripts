@@ -85,9 +85,9 @@ mv "${OUTPUT}/${OTA_NAME}" "${OUTPUT}/${LCASE_OTA_NAME}"
 
 if [ -f "${OUTPUT}/Icon-57.png" ];
 then
-   curl -3 $KOOMODA_API_URL -F dsym=@"${OUTPUT}/${LCASE_DSYM_NAME}" -F file=@"${OUTPUT}/${LCASE_IPA_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F manifest=@"${OUTPUT}/${LCASE_OTA_NAME}" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
+   curl -1 $KOOMODA_API_URL -F dsym=@"${OUTPUT}/${LCASE_DSYM_NAME}" -F file=@"${OUTPUT}/${LCASE_IPA_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F manifest=@"${OUTPUT}/${LCASE_OTA_NAME}" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
 else
-   curl -3 $KOOMODA_API_URL -F dsym=@"${OUTPUT}/${LCASE_DSYM_NAME}" -F file=@"${OUTPUT}/${LCASE_IPA_NAME}" -F manifest=@"${OUTPUT}/${LCASE_OTA_NAME}" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
+   curl -1 $KOOMODA_API_URL -F dsym=@"${OUTPUT}/${LCASE_DSYM_NAME}" -F file=@"${OUTPUT}/${LCASE_IPA_NAME}" -F manifest=@"${OUTPUT}/${LCASE_OTA_NAME}" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${BUILD_NUMBER}"
 fi
 
 # And now you're done!

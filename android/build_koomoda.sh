@@ -67,6 +67,6 @@ mv "${OUTPUT}/logo.png" "${OUTPUT}/Icon-57.png"
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
-curl -3 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${APPLICATION_VERSION_NUMBER}" -F platform="android"
+curl -1 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${APPLICATION_VERSION_NUMBER}" -F platform="android"
 
 
