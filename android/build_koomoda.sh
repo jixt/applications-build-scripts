@@ -55,19 +55,19 @@ fi
 # Create lowercase variables for client and project
 
 # Upload files to Koomoda
-REPLACE_AMPESAND_STRING=""
+#REPLACE_AMPESAND_STRING=""
 
-FILE_NAME=`find "${OUTPUT}" -name "*.apk"`
+APK_FILE=`find "${OUTPUT}" -name "*.apk"`
 #FILE_NAME="$APP_NAME-$BUILD_TYPE.apk"
-LCASE_FILE_NAME=`lowerCase "$FILE_NAME"`
-LCASE_FILE_NAME=${LCASE_FILE_NAME//[&\']/$REPLACE_AMPESAND_STRING}
+#LCASE_FILE_NAME=`lowerCase "$FILE_NAME"`
+#LCASE_FILE_NAME=${LCASE_FILE_NAME//[&\']/$REPLACE_AMPESAND_STRING}
 
-mv "${OUTPUT}/${FILE_NAME}" "${OUTPUT}/${LCASE_FILE_NAME}"
+#mv "${OUTPUT}/${FILE_NAME}" "${OUTPUT}/${LCASE_FILE_NAME}"
 mv "${OUTPUT}/logo.png" "${OUTPUT}/Icon-57.png"
 
 # Koomoda
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
-curl -1 $KOOMODA_API_URL -F file=@"${OUTPUT}/${LCASE_FILE_NAME}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${APPLICATION_VERSION_NUMBER}" -F platform="android"
+curl -1 $KOOMODA_API_URL -F file=@"${APK_FILE}" -F icon=@"${OUTPUT}/Icon-57.png" -F user_token="${K_ACCOUNT_TOKEN}" -F app_token="${K_APP_TOKEN}" -F app_version="${APPLICATION_VERSION_NUMBER}" -F platform="android"
 
 
