@@ -14,7 +14,7 @@ function failed()
 
 function usage()
 {
-    echo "Usage: $0 -xc xcode_config -t koomoda_account_token -a koomoda_app_token (-c configfile -an app_name -bi bundle_id -ci code_sign_identity)"
+    echo "Usage: $0 -xc xcode_config -t koomoda_account_token -a koomoda_app_token (-c configfile -an app_name -bi bundle_id -ci code_sign_identity -pp project_path)"
     exit 2
 }
 
@@ -32,6 +32,7 @@ do
 		-bi) BUNDLE_IDENTIFIER=$2; shift;;
 		-ci) CODE_SIGN_IDENTITY=$2; shift;;
 		-xc) XCODE_CONFIG=$2; shift;;
+		-pp) PROJECT_PATH=$2; shift;;
         *)	usage;;
     esac
     shift
@@ -44,16 +45,24 @@ fi
 
 set -ex
 
+# Reset the workspace if needed
+
+PROJECT_BASE=$WORKSPACE
+
+if [ "$PROJECT_PATH" != "" ]; then
+	PROJECT_BASE=$PROJECT_PATH
+fi
+
 # Setting the needed variables
 
 clear
 if [ "$BUILD_CONFIG_FILE" == "" ]; then
-. "$WORKSPACE/build.config"
+. "$PROJECT_BASE/build.config"
 else
-. "$WORKSPACE/$BUILD_CONFIG_FILE"
+. "$PROJECT_BASE/$BUILD_CONFIG_FILE"
 fi
 
-export OUTPUT="$WORKSPACE/output"
+export OUTPUT="$PROJECT_BASE/output"
 rm -rf "$OUTPUT"
 mkdir -p "$OUTPUT"
 PROVISIONING_PROFILE_PATH=~/Library/MobileDevice/Provisioning\ Profiles/
@@ -82,7 +91,7 @@ $PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
 # Set the settings values
 if [ "$SETTINGS_BUNDLE" != "" ]
 then
-	$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$WORKSPACE/$SETTINGS_BUNDLE/Root.plist"
+	$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$PROJECT_BASE/$SETTINGS_BUNDLE/Root.plist"
 fi
 
 # Build the application for the several levels (Debug, Release, ...) &
@@ -119,16 +128,16 @@ then
 	then
 		if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
-			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	else
 		if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
 		then
-      		$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+      		$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
-			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -configuration "$XCODE_CONFIG" -target "$TARGET_NAME" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	fi
 else
@@ -137,16 +146,16 @@ else
 	then
     	if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
-			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK APP_NAME="$APP_NAME" BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	else
 		if [ "$XCODE_PROJECT_FILE_NAME" != "" ] 
 		then
-			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -project "$XCODE_PROJECT_FILE_NAME" -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		else
-			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$WORKSPACE/build/$XCODE_CONFIG-iphoneos" || failed build;
+			$XCODEBUILD -configuration "$XCODE_CONFIG" -sdk $SDK BUNDLE_ID=$BUNDLE_IDENTIFIER build PROVISIONING_PROFILE="$PROVISIONING" CODE_SIGN_IDENTITY="iPhone Distribution: $CODE_SIGN_IDENTITY" CONFIGURATION_BUILD_DIR="$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" || failed build;
 		fi
 	fi	 
 fi
@@ -154,28 +163,28 @@ fi
 OTA_NAME="$APP_FILENAME-$XCODE_CONFIG-manifest.plist"
 IPA_NAME="$APP_FILENAME-$XCODE_CONFIG.ipa"
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
-APP_FILE=`find "$WORKSPACE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
+APP_FILE=`find "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos" -name "*.app"`
 $XCRUN -sdk $SDK PackageApplication -v "$APP_FILE" -o "$OUTPUT/$IPA_NAME" --embed "$CERTIFICATE";
 # Zip & Copy the dSYM file & remove the zip
-cd "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/"
+cd "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/"
 tar -pczf "$APP_FILENAME.tar.gz" "$TARGET_NAME.app.dSYM"
-cd "$WORKSPACE"
-cp "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
-rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
+cd "$PROJECT_BASE"
+cp "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz" "$OUTPUT/$APP_FILENAME.tar.gz"
+rm "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 # Copy the icon files
-	if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
-		cp "$WORKSPACE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
+	if [ -f "$PROJECT_BASE/$OTASmallIcon" ]; then
+		cp "$PROJECT_BASE/$OTASmallIcon" "$OUTPUT/Icon-57.png"
 	fi
-	if [ -f "$WORKSPACE/$OTALargeIcon" ]; then
-		cp "$WORKSPACE/$OTALargeIcon" "$OUTPUT/Icon-512.png"
+	if [ -f "$PROJECT_BASE/$OTALargeIcon" ]; then
+		cp "$PROJECT_BASE/$OTALargeIcon" "$OUTPUT/Icon-512.png"
 	fi
 	      # Copy the release noteS
-	      if [ -f "$WORKSPACE/$RELEASENOTE" ]; then
-	          cp "$WORKSPACE/$RELEASENOTE" "$OUTPUT/$RELEASENOTE"
+	      if [ -f "$PROJECT_BASE/$RELEASENOTE" ]; then
+	          cp "$PROJECT_BASE/$RELEASENOTE" "$OUTPUT/$RELEASENOTE"
 	      fi
 	# Create the manifest file
-	bundle_version=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleShortVersionString)
-	bundle_id=$(defaults read "$WORKSPACE/$INFO_PLIST" CFBundleIdentifier)
+	bundle_version=$(defaults read "$PROJECT_BASE/$INFO_PLIST" CFBundleShortVersionString)
+	bundle_id=$(defaults read "$PROJECT_BASE/$INFO_PLIST" CFBundleIdentifier)
 	cat <<-EOF > $OUTPUT/$OTA_NAME
 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 	<plist version="1.0">
@@ -192,7 +201,7 @@ rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	                   <string>{{ipa}}</string>
 	               </dict>
 	EOF
-	if [ -f "$WORKSPACE/$OTASmallIcon" ]; then
+	if [ -f "$PROJECT_BASE/$OTASmallIcon" ]; then
 		cat <<-EOF >> $OUTPUT/$OTA_NAME
 	               <dict>
 	                   <key>kind</key>
@@ -204,7 +213,7 @@ rm "$WORKSPACE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	               </dict>
 	EOF
 	fi
-	if [ -f "$WORKSPACE/$OTALargeIcon" ]; then
+	if [ -f "$PROJECT_BASE/$OTALargeIcon" ]; then
 		cat <<-EOF >> $OUTPUT/$OTA_NAME
 	               <dict>
 	                   <key>kind</key>
