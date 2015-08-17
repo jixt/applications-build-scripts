@@ -85,8 +85,8 @@ CFBundleShortVersionString=$BUILD_NUMBER
 $PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$INFO_PLIST"
 
 # Set the date
-CFBuildDate=$(date +%d-%m-%Y)
-$PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
+#CFBuildDate=$(date +%d-%m-%Y)
+#$PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
 
 # Set the settings values
 if [ "$SETTINGS_BUNDLE" != "" ]
