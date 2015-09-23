@@ -84,6 +84,10 @@ KOOMODA_API_URL="https://www.koomoda.com/app/upload"
 CFBundleShortVersionString=$BUILD_NUMBER
 $PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$INFO_PLIST"
 
+# Set the version number
+CFBundleVersion=$BUILD_NUMBER
+$PLIST_BUDDY -c "Set :CFBundleVersion $CFBundleVersion" "$INFO_PLIST"
+
 # Set the date
 #CFBuildDate=$(date +%d-%m-%Y)
 #$PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
