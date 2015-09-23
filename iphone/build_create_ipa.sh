@@ -70,8 +70,6 @@ echo "Copy the icon files"
 	               <dict>
 	                   <key>kind</key>
 	                   <string>display-image</string>
-	                   <key>needs-shine</key>
-	                   <true/>
 	                   <key>url</key>
 	                   <string>{{icon57}}</string>
 	               </dict>
@@ -82,8 +80,6 @@ echo "Copy the icon files"
 	               <dict>
 	                   <key>kind</key>
 	                   <string>full-size-image</string>
-	                   <key>needs-shine</key>
-	                   <true/>
 	                   <key>url</key>
 	                   <string>{{icon512}}</string>
 	               </dict>

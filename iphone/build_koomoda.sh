@@ -206,8 +206,6 @@ rm "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	               <dict>
 	                   <key>kind</key>
 	                   <string>display-image</string>
-	                   <key>needs-shine</key>
-	                   <true/>
 	                   <key>url</key>
 	                   <string>{{icon57}}</string>
 	               </dict>
@@ -218,8 +216,6 @@ rm "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	               <dict>
 	                   <key>kind</key>
 	                   <string>full-size-image</string>
-	                   <key>needs-shine</key>
-	                   <true/>
 	                   <key>url</key>
 	                   <string>{{icon512}}</string>
 	               </dict>
