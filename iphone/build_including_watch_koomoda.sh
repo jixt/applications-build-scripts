@@ -99,7 +99,7 @@ then
 fi
 
 # Archive the app
-$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME-$XCODE_CONFIG.xcarchive" archive
+$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" archive
 
 # Configure the names for the OTA file
 OTA_NAME="$APP_SCHEME-$XCODE_CONFIG-manifest.plist"
