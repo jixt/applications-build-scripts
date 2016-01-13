@@ -110,7 +110,7 @@ OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 $XCRUN xcodebuild -exportArchive -exportOptionsPlist "$PROJECT_BASE/exportArchive.plist" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" -exportPath "$OUTPUT"
 
 # Rename (by move) the IPA
-mv "$OUTPUT/$APP_SCHEME.ipa" "$OUTPUT/IPA_NAME"
+mv "$OUTPUT/$APP_SCHEME.ipa" "$OUTPUT/$IPA_NAME"
 
 # Copy the icon files
 	if [ -f "$PROJECT_BASE/$APP_ICON" ]; then
