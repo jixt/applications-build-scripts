@@ -99,7 +99,7 @@ then
 fi
 
 # Archive the app
-$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" archive
+$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME-$XCODE_CONFIG.xcarchive" archive
 
 # Configure the names for the OTA file
 OTA_NAME="$APP_SCHEME-$XCODE_CONFIG-manifest.plist"
@@ -107,7 +107,7 @@ IPA_NAME="$APP_SCHEME-$XCODE_CONFIG.ipa"
 OTA_URL="$(eval echo \$`echo OTAUrl$XCODE_CONFIG`)"
 
 # Export the archive to an IPA file
-$XCRUN xcodebuild -exportArchive -exportOptionsPlist "$PROJECT_BASE/exportArchive.plist" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" -exportPath "$OUTPUT"
+$XCRUN xcodebuild -exportArchive -exportOptionsPlist "$PROJECT_BASE/exportArchive.plist" -archivePath "$OUTPUT/$APP_SCHEME-$XCODE_CONFIG.xcarchive" -exportPath "$OUTPUT"
 
 # Copy the icon files
 	if [ -f "$PROJECT_BASE/$APP_ICON" ]; then
