@@ -14,7 +14,7 @@ function failed()
 
 function usage()
 {
-    echo "Usage: $0 -xc xcode_config -t koomoda_account_token -a koomoda_app_token -an app_name (-c configfile -pp project_path)"
+    echo "Usage: $0 -xc xcode_config -t koomoda_account_token -a koomoda_app_token -an app_name (-c configfile -pp project_path -bn build_number)"
     exit 2
 }
 
@@ -31,6 +31,7 @@ do
 		-an) APP_NAME=$2; shift;;
 		-xc) XCODE_CONFIG=$2; shift;;
 		-pp) PROJECT_PATH=$2; shift;;
+		-bn) APP_BUILD_NUMBER=$2; shift;;
         *)	usage;;
     esac
     shift
@@ -78,17 +79,22 @@ LCASE_PROJECT_NAME=`lowerCase "$PROJECT_NAME"`
 
 KOOMODA_API_URL="https://www.koomoda.com/app/upload"
 
+#Set the build number if there is one set as parameter
+if [ "$APP_BUILD_NUMBER" != "" ]; then
+	BUILD_NUMBER=$APP_BUILD_NUMBER
+fi
+
 # Set the short version number
 CFBundleShortVersionString=$BUILD_NUMBER
-$PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$APP_INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$WATCHEXTENSION_INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleShortVersionString $CFBundleShortVersionString" "$WATCHAPP_INFO_PLIST"
 
 # Set the version number
 CFBundleVersion=$BUILD_NUMBER
-$PLIST_BUDDY -c "Set :CFBundleVersion $CFBundleVersion" "$INFO_PLIST"
-
-# Set the date
-#CFBuildDate=$(date +%d-%m-%Y)
-#$PLIST_BUDDY -c "Add :CFBuildDate string $CFBuildDate" "$INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleVersion $CFBundleVersion" "$APP_INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleVersion $CFBundleVersion" "$WATCHEXTENSION_INFO_PLIST"
+$PLIST_BUDDY -c "Set :CFBundleVersion $CFBundleVersion" "$WATCHAPP_INFO_PLIST"
 
 # Set the settings values
 if [ "$SETTINGS_BUNDLE" != "" ]
@@ -135,8 +141,8 @@ rm "$PROJECT_BASE/build/$XCODE_CONFIG-iphoneos/$APP_FILENAME.tar.gz"
 	          cp "$PROJECT_BASE/$RELEASENOTE" "$OUTPUT/$RELEASENOTE"
 	      fi
 	# Create the manifest file
-	bundle_version=$(defaults read "$PROJECT_BASE/$INFO_PLIST" CFBundleShortVersionString)
-	bundle_id=$(defaults read "$PROJECT_BASE/$INFO_PLIST" CFBundleIdentifier)
+	bundle_version=$(defaults read "$PROJECT_BASE/$APP_INFO_PLIST" CFBundleShortVersionString)
+	bundle_id=$(defaults read "$PROJECT_BASE/$APP_INFO_PLIST" CFBundleIdentifier)
 	cat <<-EOF > $OUTPUT/$OTA_NAME
 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 	<plist version="1.0">
