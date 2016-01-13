@@ -98,8 +98,13 @@ then
 	$PLIST_BUDDY -c "Set :PreferenceSpecifiers:2:DefaultValue $CFBundleShortVersionString" "$PROJECT_BASE/$SETTINGS_BUNDLE/Root.plist"
 fi
 
+# Set Provisioning profile
+APP_PROVISIONING=$(eval echo \$`echo AppProvision$XCODE_CONFIG`)
+WATCHEXTENSION_PROVISIONING=$(eval echo \$`echo WatchExtensionProvision$XCODE_CONFIG`)
+WATCHAPP_PROVISIONING=$(eval echo \$`echo WatchAppProvision$XCODE_CONFIG`)
+
 # Archive the app
-$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" archive
+$XCODEBUILD -scheme "$APP_SCHEME" -archivePath "$OUTPUT/$APP_SCHEME.xcarchive" APP_NAME="$APP_NAME" APP_PROFILE="$APP_PROVISIONING" WATCH_EXTENSION_PROFILE="$WATCHEXTENSION_PROVISIONING" WATCH_APP_PROFILE="$WATCHAPP_PROVISIONING" archive
 
 # Configure the names for the OTA file
 OTA_NAME="$APP_SCHEME-$XCODE_CONFIG-manifest.plist"
